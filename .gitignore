@@ -27,7 +27,6 @@ Thumbs.db
 
 # Project specific
 *.csv
-!sample_data_review.csv
 reviews.json
 aspect_analysis_results_*.csv
 aspect_results_*.csv
