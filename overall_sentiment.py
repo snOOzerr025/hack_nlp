@@ -15,20 +15,29 @@ def compute_overall_score(ratings):
     if not ratings:
         return {}
     
-    ratings = [r for r in ratings if r and str(r).replace('.', '').isdigit()]
+    # Clean and convert ratings to float
+    clean_ratings = []
+    for r in ratings:
+        try:
+            if r is not None:
+                rating_val = float(r)
+                if 1 <= rating_val <= 5:
+                    clean_ratings.append(rating_val)
+        except (ValueError, TypeError):
+            continue
     
-    if not ratings:
+    if not clean_ratings:
         return {}
     
-    avg_rating = sum(ratings) / len(ratings)
+    avg_rating = sum(clean_ratings) / len(clean_ratings)
     percentage = (avg_rating / 5.0) * 100
     
     return {
         'out_of_5': round(avg_rating, 2),
         'percentage': round(percentage, 1),
-        'total_count': len(ratings),
-        'min': min(ratings),
-        'max': max(ratings)
+        'total_count': len(clean_ratings),
+        'min': min(clean_ratings),
+        'max': max(clean_ratings)
     }
 
 

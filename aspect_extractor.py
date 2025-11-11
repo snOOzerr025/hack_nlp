@@ -100,7 +100,7 @@ class AspectSentimentAnalyzer:
         Returns:
             DataFrame with aspect-level sentiment statistics
         """
-        print(f"🔍 Analyzing aspects in {len(reviews)} reviews...")
+        print(f"Analyzing aspects in {len(reviews)} reviews...")
 
         # Extract aspect mentions
         aspect_mentions = self.extract_aspect_mentions(reviews)
@@ -121,24 +121,47 @@ class AspectSentimentAnalyzer:
                 })
                 continue
 
-            # Extract sentences mentioning this aspect
-            sentences = [sentence for _, sentence in mentions]
+            try:
+                # Extract sentences mentioning this aspect
+                sentences = [sentence for _, sentence in mentions if sentence and sentence.strip()]
+                
+                if not sentences:
+                    # No valid sentences
+                    aspect_results.append({
+                        'aspect': aspect,
+                        'mention_count': len(mentions),
+                        'positive_count': 0,
+                        'negative_count': 0,
+                        'positive_ratio': 0.0,
+                        'sentiment_score': 0.0
+                    })
+                    continue
 
-            # Batch sentiment analysis (GPU accelerated)
-            sentiments = self.sentiment_pipeline(sentences)
+                # Batch sentiment analysis (GPU accelerated)
+                sentiments = self.sentiment_pipeline(sentences)
 
-            # Count positive/negative
-            positive_count = sum(1 for s in sentiments if s['label'] == 'POSITIVE')
-            negative_count = len(sentiments) - positive_count
+                # Count positive/negative
+                positive_count = sum(1 for s in sentiments if s['label'] == 'POSITIVE')
+                negative_count = len(sentiments) - positive_count
 
-            # Calculate metrics
-            positive_ratio = (positive_count / len(sentiments)) * 100
-
-            # Sentiment score: +1 for positive, -1 for negative, weighted by confidence
-            sentiment_score = sum(
-                s['score'] if s['label'] == 'POSITIVE' else -s['score']
-                for s in sentiments
-            ) / len(sentiments)
+                # Calculate metrics
+                if len(sentiments) > 0:
+                    positive_ratio = (positive_count / len(sentiments)) * 100
+                    # Sentiment score: +1 for positive, -1 for negative, weighted by confidence
+                    sentiment_score = sum(
+                        s['score'] if s['label'] == 'POSITIVE' else -s['score']
+                        for s in sentiments
+                    ) / len(sentiments)
+                else:
+                    positive_ratio = 0.0
+                    sentiment_score = 0.0
+            except Exception as e:
+                # If sentiment analysis fails for this aspect, use default values
+                print(f"Warning: Sentiment analysis failed for aspect '{aspect}': {e}")
+                positive_count = 0
+                negative_count = 0
+                positive_ratio = 0.0
+                sentiment_score = 0.0
 
             aspect_results.append({
                 'aspect': aspect,
@@ -150,10 +173,17 @@ class AspectSentimentAnalyzer:
             })
 
         # Create DataFrame
-        df = pd.DataFrame(aspect_results)
-
-        # Sort by mention count (most discussed aspects first)
-        df = df.sort_values('mention_count', ascending=False).reset_index(drop=True)
+        if not aspect_results:
+            # Return empty DataFrame with expected columns if no results
+            df = pd.DataFrame(columns=['aspect', 'mention_count', 'positive_count', 
+                                       'negative_count', 'positive_ratio', 'sentiment_score'])
+        else:
+            df = pd.DataFrame(aspect_results)
+            
+            # Sort by mention count (most discussed aspects first)
+            # Only sort if DataFrame is not empty and has the column
+            if not df.empty and 'mention_count' in df.columns:
+                df = df.sort_values('mention_count', ascending=False).reset_index(drop=True)
 
         print("✅ Aspect analysis complete!")
         return df
