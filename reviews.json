@@ -110,5 +110,48 @@
     "review": "gjhvjvn",
     "reviewer": "Anonymous",
     "timestamp": "2025-11-12 03:16:29"
+  },
+  {
+    "id": 15,
+    "product": "i pill",
+    "rating": 5,
+    "review": "didt work as expected got the product after 9 months",
+    "reviewer": "ashsih",
+    "timestamp": "2025-11-13 10:25:41"
+  },
+  {
+    "id": 16,
+    "product": "headphone",
+    "rating": 5,
+    "review": "doest work like expected and also did not like the colour of the headphones",
+    "reviewer": "ashsih",
+    "timestamp": "2025-11-13 10:27:52"
+  },
+  {
+    "id": 17,
+    "product": "headphone",
+    "rating": 2,
+    "review": "doest work like expected and also did not like the colour of the headphones",
+    "reviewer": "ashsih",
+    "timestamp": "2025-11-13 10:28:05"
+  },
+  {
+    "id": 18,
+    "product": "realme 11",
+    "rating": 3,
+    "review": "good batterry life , bad build quality , decent camera , ",
+    "reviewer": "ashsih",
+    "timestamp": "2025-11-13 10:29:24"
+  },
+  {
+    "id": 19,
+    "product_name": "haldiram bhuji",
+    "reviewer_name": "Anmol",
+    "rating": 5,
+    "review_text": "qualityis amazing ,good amount",
+    "category": "Food & Beverages",
+    "price_paid": 89.0,
+    "recommend": "Yes",
+    "timestamp": "2025-11-13 10:40:20"
   }
 ]
